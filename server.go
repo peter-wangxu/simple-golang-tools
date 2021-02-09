@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"simple-golang-tools/pkg/httputil"
+	"github.com/peter-wangxu/simple-golang-tools/pkg/httputil"
 )
 
 
