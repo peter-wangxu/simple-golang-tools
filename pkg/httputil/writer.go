@@ -1,4 +1,4 @@
-package http
+package httputil
 
 import (
 	"bytes"
@@ -29,7 +29,10 @@ func NewWrappedResponseWriter(w http.ResponseWriter) *WrappedResponseWriter {
 }
 
 func (wrw *WrappedResponseWriter) Write(p []byte) (int, error) {
-	wrw.ResponseWriter.Write(p)
+	n, err := wrw.ResponseWriter.Write(p)
+	if err != nil { // if error, do not write buffer
+		return n, err
+	}
 	return wrw.Buf.Write(p)
 }
 
