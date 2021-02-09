@@ -7,8 +7,8 @@ import (
 
 type WrappedResponseWriter struct {
 	http.ResponseWriter
-	Buf  *bytes.Buffer
-	Code *int
+	buf      *bytes.Buffer
+	httpCode *int
 }
 
 // TODO(peter) what if there are data/state already in the ResponseWriter?
@@ -16,14 +16,14 @@ type WrappedResponseWriter struct {
 func NewWrappedResponseWriter(w http.ResponseWriter) *WrappedResponseWriter {
 	wrw := &WrappedResponseWriter{
 		ResponseWriter: w,
-		Buf:            &bytes.Buffer{},
-		Code:           new(int),
+		buf:            &bytes.Buffer{},
+		httpCode:       new(int),
 	}
-	*wrw.Code = 200
+	*wrw.httpCode = 200
 	////// Try to read the existing data
 	//if c, ok := w.(*WrappedResponseWriter); ok {
-	//	wrw.Buf.Write(c.Get())
-	//	wrw.Code = c.Code
+	//	wrw.buf.Write(c.Get())
+	//	wrw.httpCode = c.httpCode
 	//}
 	return wrw
 }
@@ -33,11 +33,11 @@ func (wrw *WrappedResponseWriter) Write(p []byte) (int, error) {
 	if err != nil { // if error, do not write buffer
 		return n, err
 	}
-	return wrw.Buf.Write(p)
+	return wrw.buf.Write(p)
 }
 
 func (wrw *WrappedResponseWriter) WriteHeader(code int) {
-	*wrw.Code = code
+	*wrw.httpCode = code
 	wrw.ResponseWriter.WriteHeader(code)
 }
 
@@ -45,5 +45,9 @@ func (wrw *WrappedResponseWriter) WriteHeader(code int) {
 // possible to chain WrappedResponseWriter otherwise
 // we lose the bytes written already
 func (wrw *WrappedResponseWriter) Get() []byte {
-	return wrw.Buf.Bytes()
+	return wrw.buf.Bytes()
+}
+
+func (wrw *WrappedResponseWriter) Code() int {
+	return *wrw.httpCode
 }

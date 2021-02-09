@@ -33,7 +33,7 @@ func writerTest(w http.ResponseWriter, req *http.Request) {
 	wres := httputil.NewWrappedResponseWriter(w)
 	wres.Write([]byte("my response data\n"))
 	wres.WriteHeader(500)
-	log.Printf("response: %q, %d\n", wres.Get(), *wres.Code)
+	log.Printf("response: %q, %d\n", wres.Get(), wres.Code())
 }
 
 func main() {
